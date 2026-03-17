@@ -105,18 +105,18 @@ export default function GenericPage() {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col">
+    <div className="min-h-screen pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col bg-slate-50">
       <div className="mb-16">
         <BlurText 
           text={data.title} 
           delay={50} 
-          className="text-4xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-300 tracking-tight mb-4"
+          className="text-4xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-cyan-400 tracking-tight mb-4"
         />
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="text-xl md:text-2xl text-white/50 font-light max-w-3xl"
+          className="text-xl md:text-2xl text-slate-500 font-light max-w-3xl"
         >
           {data.subtitle}
         </motion.p>
@@ -132,7 +132,7 @@ export default function GenericPage() {
             className="space-y-6"
           >
             {data.content.map((paragraph, i) => (
-              <p key={i} className="text-white/70 leading-relaxed text-lg font-light">
+              <p key={i} className="text-slate-700 leading-relaxed text-lg font-light">
                 {paragraph}
               </p>
             ))}
@@ -146,12 +146,12 @@ export default function GenericPage() {
               transition={{ delay: 1 }}
               className="w-full"
             >
-              <SpotlightCard className="rounded-3xl border border-white/10 bg-white/[0.02] p-10 flex flex-col">
-                <h3 className="text-2xl font-bold mb-6 text-white">Send us a message</h3>
-                <input type="text" placeholder="Name" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 mb-4 text-white placeholder-white/40 focus:outline-none focus:border-amber-500 transition-colors" />
-                <input type="email" placeholder="Email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 mb-4 text-white placeholder-white/40 focus:outline-none focus:border-amber-500 transition-colors" />
-                <textarea placeholder="Message" rows="4" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 mb-6 text-white placeholder-white/40 focus:outline-none focus:border-amber-500 transition-colors resize-none"></textarea>
-                <button className="w-full py-4 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-500 text-black font-bold text-lg hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all active:scale-95">Send Request</button>
+              <SpotlightCard className="rounded-3xl border border-slate-200 bg-white p-10 flex flex-col shadow-xl hover:shadow-2xl transition-shadow">
+                <h3 className="text-2xl font-bold mb-6 text-slate-800">Send us a message</h3>
+                <input type="text" placeholder="Name" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 transition-colors" />
+                <input type="email" placeholder="Email" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 transition-colors" />
+                <textarea placeholder="Message" rows="4" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-6 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 transition-colors resize-none"></textarea>
+                <button className="w-full py-4 rounded-xl bg-gradient-to-r from-sky-500 to-sky-400 text-white font-bold text-lg hover:shadow-lg transition-all active:scale-95">Send Request</button>
               </SpotlightCard>
             </motion.div>
           )}

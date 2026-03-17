@@ -6,8 +6,8 @@ export default function TrueFocus({
   sentence = "True Focus",
   manualMode = false,
   blurAmount = 4,
-  borderColor = "#eab308", // Amber 500
-  glowColor = "rgba(234, 179, 8, 0.4)",
+  borderColor = "#0ea5e9", // Sky 500
+  glowColor = "rgba(14, 165, 233, 0.4)",
   animationDuration = 0.5,
   pauseBetweenAnimations = 2000,
   className = ""
@@ -75,7 +75,7 @@ export default function TrueFocus({
                 opacity: isActive ? 1 : 0.4,
               }}
               transition={{ duration: animationDuration }}
-              className="text-white text-5xl md:text-8xl font-black z-10 font-sans tracking-tight leading-loose"
+              className="text-slate-900 text-5xl md:text-8xl font-black z-10 font-sans tracking-tight leading-loose"
             >
               {word}
             </motion.span>

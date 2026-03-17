@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { motion, useSpring, useMotionValue } from "framer-motion";
 
-export default function SpotlightCard({ children, className = "", spotlightColor = "rgba(255, 255, 255, 0.25)" }) {
+export default function SpotlightCard({ children, className = "", spotlightColor = "rgba(14, 165, 233, 0.08)" }) {
   const isHovered = useRef(false);
   const [isHoveredState, setHoveredState] = useState(false);
   const containerRef = useRef(null);

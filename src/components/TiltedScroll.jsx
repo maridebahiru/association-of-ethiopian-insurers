@@ -41,33 +41,33 @@ function Card({ item }) {
         scale: 1.05, 
         rotateX: -10, 
         rotateY: 10,
-        boxShadow: "0px 20px 40px rgba(245, 158, 11, 0.2)"
+        boxShadow: "0px 20px 40px rgba(14, 165, 233, 0.15)"
       }}
       style={{ transformStyle: "preserve-3d" }}
-      className="relative w-64 h-80 rounded-[2rem] bg-gradient-to-br from-white/[0.08] to-white/[0.01] border border-white/10 p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors hover:border-amber-500/50"
+      className="relative w-64 h-80 rounded-[2rem] bg-gradient-to-br from-white to-slate-50 border border-slate-200 p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors hover:border-sky-300 shadow-md"
     >
       <div 
-        className="absolute inset-0 rounded-[2rem] bg-amber-500/10 blur-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        className="absolute inset-0 rounded-[2rem] bg-sky-200/50 blur-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{ transform: "translateZ(-50px)" }}
       />
       <div 
-        className="w-24 h-24 rounded-full bg-white/10 mb-6 flex items-center justify-center border border-white/20 shadow-inner overflow-hidden"
+        className="w-24 h-24 rounded-full bg-slate-100 mb-6 flex items-center justify-center border border-slate-200 shadow-sm overflow-hidden"
         style={{ transform: "translateZ(30px)" }}
       >
         {item.image ? (
           <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
         ) : (
-          <span className="text-3xl font-bold text-amber-500">{item.name?.charAt(0) || "M"}</span>
+          <span className="text-3xl font-bold text-sky-500">{item.name?.charAt(0) || "M"}</span>
         )}
       </div>
       <h3 
-        className="text-xl font-bold text-white mb-2"
+        className="text-xl font-bold text-slate-800 mb-2"
         style={{ transform: "translateZ(40px)" }}
       >
         {item.name}
       </h3>
       <p 
-        className="text-amber-500/80 font-medium text-sm tracking-wide"
+        className="text-sky-600 font-medium text-sm tracking-wide"
         style={{ transform: "translateZ(20px)" }}
       >
         {item.role || item.description}

@@ -8,6 +8,7 @@ import NewsAndEvents from './components/NewsAndEvents';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import GenericPage from './pages/GenericPage';
+import Chatbot from './components/Chatbot';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -33,12 +34,13 @@ function AnimatedRoutes() {
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-[#050505] text-white selection:bg-amber-500/30 selection:text-amber-200 font-sans flex flex-col">
+      <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-sky-200 selection:text-sky-900 font-sans flex flex-col">
         <Navbar />
         <div className="flex-1">
           <AnimatedRoutes />
         </div>
         <Footer />
+        <Chatbot />
       </div>
     </BrowserRouter>
   );
