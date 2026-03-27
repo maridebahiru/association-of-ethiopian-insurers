@@ -2,9 +2,13 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const COMPANIES = [
-  "Awash Insurance", "Nyala Insurance", "United Insurance", 
-  "Nib Insurance", "Oromia Insurance", "Zemen Insurance", 
-  "EIC", "Tsehay Insurance", "Lucy Insurance", "National Insurance"
+  { name: "Ethiopian Insurance Company", spriteIndex: 0 },
+  { name: "Global Insurance Company", spriteIndex: 1 },
+  { name: "Lion Insurance Company", spriteIndex: 2 },
+  { name: "Lucy Insurance company", spriteIndex: 3 },
+  { name: "Nib Insurance Company", spriteIndex: 4 },
+  { name: "Nile Insurance Company", spriteIndex: 5 },
+  { name: "National Insurance Company of Ethiopia", spriteIndex: 6 },
 ];
 
 export default function InfiniteLogoScroll() {
@@ -16,15 +20,33 @@ export default function InfiniteLogoScroll() {
       
       <div className="relative w-full max-w-[100vw] overflow-hidden flex [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
         <motion.div
-          className="flex flex-nowrap gap-12 sm:gap-20 py-4 items-center pr-12 sm:pr-20"
+          className="flex flex-nowrap gap-8 sm:gap-12 py-6 items-center pr-8 sm:pr-12"
           animate={{ x: ["0%", "-50%"] }}
-          transition={{ ease: "linear", duration: 30, repeat: Infinity }}
+          transition={{ ease: "linear", duration: 40, repeat: Infinity }}
           style={{ width: "max-content" }}
         >
-          {[...COMPANIES, ...COMPANIES].map((name, i) => (
-             <div key={i} className="flex-shrink-0 flex items-center justify-center opacity-60 hover:opacity-100 transition-all duration-300">
-               <div className="h-16 px-8 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-200 hover:border-sky-300 hover:bg-white transition-colors cursor-pointer hover:shadow-lg">
-                 <span className="text-slate-800 font-bold text-xl">{name}</span>
+          {[...COMPANIES, ...COMPANIES].map((company, i) => (
+             <div key={i} className="flex-shrink-0 flex items-center justify-center opacity-75 hover:opacity-100 transition-all duration-300 w-56 sm:w-64">
+               <div className="w-full py-6 px-4 bg-slate-50 rounded-2xl flex flex-col items-center justify-center border border-slate-200 hover:border-sky-300 hover:bg-white transition-colors cursor-pointer hover:shadow-xl group">
+                 
+                 {/* CSS Sprite Logo Extraction */}
+                 <div className="w-[140px] h-[75px] overflow-hidden relative mb-4 transition-transform duration-300 group-hover:scale-110">
+                    <img 
+                      src="/insurers-logos.jpg" 
+                      alt={`${company.name} Logo`}
+                      className="absolute max-w-none mix-blend-multiply"
+                      style={{ 
+                         top: '0px',
+                         left: `calc(70px - ${company.spriteIndex * (1024/7) + (1024/7)/2}px)`,
+                         width: '1024px',
+                         height: '150px' 
+                      }}
+                    />
+                 </div>
+
+                 <span className="text-slate-800 font-bold text-[13px] sm:text-[14px] text-center leading-tight min-h-[40px] flex items-center">
+                   {company.name}
+                 </span>
                </div>
              </div>
           ))}
