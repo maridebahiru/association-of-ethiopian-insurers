@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Twitter, Linkedin } from "lucide-react";
+import logo from "../assets/logo.png";
 
 export default function Footer() {
   return (
@@ -8,7 +9,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-6">
-              <img src="/logo.png" alt="AEI Logo" className="h-20 w-auto opacity-100 drop-shadow-sm" />
+              <img src={logo} alt="AEI Logo" className="h-24 w-auto object-contain opacity-100 drop-shadow-sm" />
             </div>
             <p className="text-slate-600 text-sm leading-relaxed mb-6">
               Empowering the Ethiopian insurance sector through advocacy, data, and uncompromising standards.

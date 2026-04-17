@@ -8,6 +8,9 @@ import NewsAndEvents from './components/NewsAndEvents';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import GenericPage from './pages/GenericPage';
+import NewsPage from './pages/NewsPage';
+import MembersPage from './pages/MembersPage';
+import AdminPage from './pages/AdminPage';
 import Chatbot from './components/Chatbot';
 
 function AnimatedRoutes() {
@@ -25,6 +28,9 @@ function AnimatedRoutes() {
             <ContactSection />
           </main>
         } />
+        <Route path="/news" element={<NewsPage />} />
+        <Route path="/members" element={<MembersPage />} />
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="*" element={<GenericPage />} />
       </Routes>
     </AnimatePresence>
@@ -34,7 +40,7 @@ function AnimatedRoutes() {
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-sky-200 selection:text-sky-900 font-sans flex flex-col">
+      <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 selection:bg-sky-200 selection:text-sky-900 font-sans flex flex-col">
         <Navbar />
         <div className="flex-1">
           <AnimatedRoutes />

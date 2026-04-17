@@ -1,99 +1,174 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import SpotlightCard from "./SpotlightCard";
-import { Calendar, ArrowRight, Bell } from "lucide-react";
+import { ChevronRight, ArrowRight, Twitter, Facebook, Linkedin, Youtube } from "lucide-react";
 
 export default function NewsAndEvents() {
-  const items = [
+  const latestNews = [
     {
-      type: "Event",
-      date: "Nov 24, 2024",
-      title: "21st Annual General Meeting",
-      desc: "Join us for our annual overview of market trends and strategic goals. We discuss key milestones and upcoming initiatives.",
-      link: "/events",
-      icon: <Calendar className="w-5 h-5 text-sky-500" />
+      date: "Jun 25, 2025",
+      title: "51st AIO Conference Addis Ababa 2025.Highlight of a colourful opening ceremony chaired by the Vice Prime Minister of the Federal Democratic Republic of Ethiopia",
+      link: "https://associationofethiopianinsurers.com/2025/06/25/51st-aio-conference-addis-ababa-2025-highlight-of-a-colourful-opening-ceremony-chaired-by-the-vice-prime-minister-of-the-federal-democratic-republic-of-ethiopia/",
+      isExternal: true
     },
     {
-      type: "News",
-      date: "Oct 12, 2024",
-      title: "Lifetime Achievement Award",
-      desc: "AEI recognizes outstanding contributions to the Ethiopian insurance sector, honoring leaders who have transformed the industry.",
-      link: "/news",
-      icon: <Bell className="w-5 h-5 text-sky-500" />
+      date: "Jun 25, 2025",
+      title: "✨ A Historic and Proud Moment! ✨",
+      link: "https://associationofethiopianinsurers.com/2025/06/25/1894/",
+      isExternal: true
     },
     {
-      type: "Announcement",
-      date: "Sep 05, 2024",
-      title: "New Regulatory Policy Updates",
-      desc: "Critical updates to the directives published by the National Bank of Ethiopia. Read the full brief to ensure compliance.",
-      link: "/announcements",
-      icon: <Bell className="w-5 h-5 text-sky-400" />
+      date: "Apr 03, 2025",
+      title: "51ST AIO CONFERENCE, ADDIS ABABA 2025.",
+      link: "https://associationofethiopianinsurers.com/2025/04/03/51st-aio-conference-addis-ababa-2025/",
+      isExternal: true
+    }
+  ];
+
+  const featuredContents = [
+    {
+      title: "FINANCIAL STABILITY REPORT",
+      desc: "The Association Issues Third Financial Stability Report",
+      link: "/reports"
+    },
+    {
+      title: "NATIONAL INSURANCE STRATEGY 2026-2030",
+      desc: "Release of draft National Insurance Strategy 2026-2030",
+      link: "/strategy"
     }
   ];
 
   return (
-    <section className="py-24 bg-white relative z-10 border-t border-slate-200" id="news">
+    <section className="py-20 bg-white text-slate-800 relative z-10" id="news">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-4"
-            >
-              Latest & <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-cyan-400">Greatest</span>
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-slate-600 max-w-xl text-lg font-light"
-            >
-              Stay updated with the latest industry news, regulatory announcements, and upcoming association events.
-            </motion.p>
-          </div>
-          <motion.div
-             initial={{ opacity: 0 }}
-             whileInView={{ opacity: 1 }}
-             viewport={{ once: true }}
-          >
-            <Link to="/news" className="flex items-center gap-2 px-6 py-3 rounded-full bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-800 font-medium transition-colors whitespace-nowrap">
-              View All Updates <ArrowRight className="w-4 h-4" />
-            </Link>
-          </motion.div>
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          {/* Left Column: Latest News (approx 70%) */}
+          <div className="lg:col-span-8 flex flex-col">
+            <div className="flex items-center gap-6 mb-10 border-b border-slate-200 pb-4">
+              <motion.h2 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="text-3xl md:text-4xl font-bold uppercase tracking-wide text-slate-900"
+              >
+                Latest
+              </motion.h2>
+              <div className="flex items-center gap-4 text-slate-400">
+                <a href="#" className="hover:text-sky-500 hover:scale-110 transition-colors"><Twitter className="w-5 h-5 fill-current" /></a>
+                <a href="#" className="hover:text-sky-500 hover:scale-110 transition-colors"><Linkedin className="w-5 h-5 fill-current" /></a>
+                <a href="#" className="hover:text-sky-500 hover:scale-110 transition-colors"><Facebook className="w-5 h-5 fill-current" /></a>
+                <a href="#" className="hover:text-sky-500 hover:scale-110 transition-colors"><Youtube className="w-5 h-5 fill-current" /></a>
+              </div>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {items.map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: i * 0.1 }}
+            <div className="flex flex-col flex-1">
+              {latestNews.map((news, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  {news.isExternal ? (
+                    <a 
+                      href={news.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block group py-6 border-b border-slate-100 hover:bg-slate-50 transition-colors px-4 -mx-4 rounded-sm"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div>
+                          <span className="block text-slate-500 text-sm font-medium mb-2">{news.date}</span>
+                          <h3 className="text-xl md:text-2xl font-bold uppercase tracking-tight text-slate-800 group-hover:text-sky-600 transition-colors leading-snug">
+                            {news.title}
+                          </h3>
+                        </div>
+                        <ChevronRight className="w-8 h-8 text-slate-300 group-hover:text-sky-500 flex-shrink-0 transition-colors" strokeWidth={1.5} />
+                      </div>
+                    </a>
+                  ) : (
+                    <Link 
+                      to={news.link} 
+                      className="block group py-6 border-b border-slate-100 hover:bg-slate-50 transition-colors px-4 -mx-4 rounded-sm"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div>
+                          <span className="block text-slate-500 text-sm font-medium mb-2">{news.date}</span>
+                          <h3 className="text-xl md:text-2xl font-bold uppercase tracking-tight text-slate-800 group-hover:text-sky-600 transition-colors leading-snug">
+                            {news.title}
+                          </h3>
+                        </div>
+                        <ChevronRight className="w-8 h-8 text-slate-300 group-hover:text-sky-500 flex-shrink-0 transition-colors" strokeWidth={1.5} />
+                      </div>
+                    </Link>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div 
+               initial={{ opacity: 0 }}
+               whileInView={{ opacity: 1 }}
+               viewport={{ once: true }}
+               className="mt-10"
             >
-              <SpotlightCard className="h-full rounded-[2rem] bg-slate-50 border border-slate-200 p-8 flex flex-col hover:border-sky-300 transition-colors group shadow-sm">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    {item.icon}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-bold text-sky-500 uppercase tracking-wider">{item.type}</span>
-                    <span className="text-xs text-slate-400">{item.date}</span>
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-sky-600 transition-colors">{item.title}</h3>
-                <p className="text-slate-500 leading-relaxed font-light flex-1 mb-6">
-                  {item.desc}
-                </p>
-                <Link to={item.link} className="flex items-center gap-2 text-sm font-medium text-sky-500 hover:text-sky-600 mt-auto w-fit">
-                  Read More <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </SpotlightCard>
+              <Link 
+                to="/news" 
+                className="inline-flex items-center gap-2 px-8 py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold uppercase tracking-wider text-sm transition-all rounded-full shadow-md hover:-translate-y-0.5"
+              >
+                All News <ArrowRight className="w-4 h-4" />
+              </Link>
             </motion.div>
-          ))}
+          </div>
+
+          {/* Right Column: Featured Contents (approx 30%) */}
+          <div className="lg:col-span-4 flex flex-col">
+            <div className="mb-10 border-b border-slate-200 pb-4">
+              <motion.h2 
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="text-2xl font-bold uppercase tracking-wide text-slate-900"
+              >
+                Featured Contents
+              </motion.h2>
+            </div>
+
+            <div className="flex flex-col gap-8">
+              {featuredContents.map((feature, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 + (i * 0.1) }}
+                  className="bg-slate-50 p-6 rounded-2xl hover:bg-sky-50 transition-colors border border-slate-100 hover:border-sky-100 shadow-sm"
+                >
+                  <Link to={feature.link} className="group block">
+                    <h4 className="text-lg font-bold text-sky-600 uppercase tracking-wide mb-3 group-hover:text-sky-700 transition-colors">
+                      {feature.title}
+                    </h4>
+                    <p className="text-slate-600 font-light leading-relaxed">
+                      {feature.desc}
+                    </p>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+            
+            {/* Some stats or extra links */}
+            <div className="mt-12 space-y-3">
+              {['18 Insurers', '54 Microfinance Institutes', '32 Banks'].map((stat, i) => (
+                <div key={i} className="flex items-center gap-3 text-slate-600 hover:text-sky-600 hover:translate-x-1 cursor-pointer transition-all border-l-2 border-sky-500 pl-4 py-1">
+                  <span className="font-bold text-lg">{stat.split(' ')[0]}</span>
+                  <span className="font-light">{stat.slice(stat.indexOf(' ') + 1)}</span>
+                </div>
+              ))}
+            </div>
+
+          </div>
+
         </div>
       </div>
     </section>

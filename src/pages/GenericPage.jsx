@@ -1,9 +1,11 @@
+import { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import BlurText from "../components/BlurText";
 import SpotlightCard from "../components/SpotlightCard";
 import TiltedScroll from "../components/TiltedScroll";
 import Masonry from "../components/Masonry";
+import AnimatedList from "../components/AnimatedList";
 
 const PAGE_DATA = {
   "/about": {
@@ -98,6 +100,25 @@ const PAGE_DATA = {
 
 export default function GenericPage() {
   const location = useLocation();
+  const [fetchedData, setFetchedData] = useState([]);
+
+  useEffect(() => {
+    const fetchDynamicData = async () => {
+      if (location.pathname === "/proclamations" || location.pathname === "/publications") {
+        try {
+          const endpoint = location.pathname.substring(1);
+          const res = await fetch(`http://localhost:5000/api/${endpoint}`);
+          const data = await res.json();
+          setFetchedData(data);
+        } catch (error) {
+          console.error(`Failed to fetch ${location.pathname} data`, error);
+        }
+      } else {
+        setFetchedData([]);
+      }
+    };
+    fetchDynamicData();
+  }, [location.pathname]);
   const data = PAGE_DATA[location.pathname] || {
     title: "Welcome",
     subtitle: "Explore the Association of Ethiopian Insurers.",
@@ -162,6 +183,22 @@ export default function GenericPage() {
           {data.tiltedItems && (
             <div className="pb-10">
                <TiltedScroll items={data.tiltedItems} />
+            </div>
+          )}
+
+          {(location.pathname === "/proclamations" || location.pathname === "/publications") && fetchedData.length > 0 && (
+            <div className="w-full pb-10 max-w-4xl mx-auto">
+              <AnimatedList
+                items={fetchedData}
+                onItemSelect={(item) => {
+                  if (item && item.fileUrl) {
+                    window.open(`http://localhost:5000${item.fileUrl}`, '_blank');
+                  }
+                }}
+                showGradients
+                enableArrowNavigation
+                displayScrollbar
+              />
             </div>
           )}
 
