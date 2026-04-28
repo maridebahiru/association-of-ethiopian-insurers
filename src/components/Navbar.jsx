@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDown, Menu, X, Moon, Sun } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import logo from "../assets/logo.png";
 
 const NAV_ITEMS = [
@@ -43,23 +43,6 @@ export default function Navbar() {
   const [mobileDropdown, setMobileDropdown] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-
-  const [theme, setTheme] = useState(
-    localStorage.getItem("theme") || "light"
-  );
-
-  useEffect(() => {
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -173,14 +156,6 @@ export default function Navbar() {
 
         {/* CTA Button & Mobile Toggle */}
         <div className="flex items-center gap-2 xl:gap-4 flex-shrink-0">
-          <button
-            onClick={toggleTheme}
-            className="p-2 text-slate-500 hover:text-sky-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-full transition-colors duration-200"
-            aria-label="Toggle theme"
-          >
-            {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-          </button>
-
           <Link
             to="/contact"
             className="hidden xl:inline-flex items-center justify-center px-6 py-2.5 text-sm font-bold text-white transition-all duration-300 bg-sky-500 border border-transparent rounded-full shadow-md hover:bg-sky-600 hover:shadow-lg hover:-translate-y-0.5"
