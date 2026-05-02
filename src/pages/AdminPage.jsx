@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import BlurText from "../components/BlurText";
 import { supabase } from "../lib/supabase";
 
-const API_URL = "http://localhost:5000/api";
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("news");
@@ -11,15 +10,19 @@ export default function AdminPage() {
   const [news, setNews] = useState([]);
   const [proclamations, setProclamations] = useState([]);
   const [publications, setPublications] = useState([]);
+  const [albums, setAlbums] = useState([]);
 
   // Fetch initial data
   const fetchData = async () => {
     try {
       if (activeTab === "news") {
-        // Keeping news on local API for now as requested or until migrated
-        const res = await fetch(`${API_URL}/news`);
-        setNews(await res.json());
-      } else {
+        const { data, error } = await supabase
+          .from("news")
+          .select("*")
+          .order("date", { ascending: false });
+        if (error) throw error;
+        setNews(data);
+      } else if (activeTab === "proclamations" || activeTab === "publications") {
         const category = activeTab === "proclamations" ? "proclamation" : "publication";
         const { data, error } = await supabase
           .from("documents")
@@ -30,6 +33,13 @@ export default function AdminPage() {
         if (error) throw error;
         if (activeTab === "proclamations") setProclamations(data);
         else setPublications(data);
+      } else if (activeTab === "gallery") {
+        const { data, error } = await supabase
+          .from("gallery_albums")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        setAlbums(data);
       }
     } catch (error) {
       console.error("Failed to fetch data", error);
@@ -44,19 +54,42 @@ export default function AdminPage() {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
     try {
       if (category === "news") {
-        await fetch(`${API_URL}/news/${id}`, { method: "DELETE" });
-      } else {
-        // 1. Get the record to find the file path
+        // 1. Get the record to find the cover image path
+        const { data: item } = await supabase.from("news").select("cover_image").eq("id", id).single();
+        
+        if (item && item.cover_image && !item.cover_image.startsWith('http')) {
+          // 2. Delete from storage if it's a relative path (managed by us)
+          const fileName = item.cover_image.split('/').pop();
+          await supabase.storage.from("news").remove([fileName]);
+        }
+
+        // 3. Delete from database
+        await supabase.from("news").delete().eq("id", id);
+      } else if (category === "proclamations" || category === "publications") {
+        // ... (existing documents logic)
         const { data: item } = await supabase.from("documents").select("file_path, category").eq("id", id).single();
         
         if (item) {
-          // 2. Delete from storage
           const bucket = item.category === "proclamation" ? "proclamations" : "publications";
           await supabase.storage.from(bucket).remove([item.file_path]);
         }
 
-        // 3. Delete from database
         await supabase.from("documents").delete().eq("id", id);
+      } else if (category === "gallery") {
+        // Delete album images first
+        const { data: images } = await supabase.from("gallery_images").select("image_url").eq("album_id", id);
+        if (images && images.length > 0) {
+          const fileNames = images.map(img => img.image_url.split('/').pop());
+          await supabase.storage.from("gallery").remove(fileNames);
+          await supabase.from("gallery_images").delete().eq("album_id", id);
+        }
+        // Delete album cover
+        const { data: album } = await supabase.from("gallery_albums").select("cover_image_url").eq("id", id).single();
+        if (album && album.cover_image_url) {
+           const coverName = album.cover_image_url.split('/').pop();
+           await supabase.storage.from("gallery").remove([coverName]);
+        }
+        await supabase.from("gallery_albums").delete().eq("id", id);
       }
       fetchData();
     } catch (err) {
@@ -73,7 +106,7 @@ export default function AdminPage() {
       />
 
       <div className="flex space-x-4 mb-8">
-        {["news", "proclamations", "publications"].map((tab) => (
+        {["news", "proclamations", "publications", "gallery"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -96,6 +129,7 @@ export default function AdminPage() {
         {activeTab === "news" && <NewsForm onSuccess={fetchData} />}
         {activeTab === "proclamations" && <ProclamationsForm onSuccess={fetchData} />}
         {activeTab === "publications" && <PublicationsForm onSuccess={fetchData} />}
+        {activeTab === "gallery" && <GalleryManagement albums={albums} onSuccess={fetchData} />}
         
         <div className="mt-12">
           <h3 className="text-xl font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Existing {activeTab}</h3>
@@ -136,6 +170,16 @@ export default function AdminPage() {
                  <button onClick={() => handleDelete(item.id, "publications")} className="text-red-500 hover:bg-red-50 p-2 rounded-lg font-bold">Delete</button>
               </div>
             ))}
+
+            {activeTab === "gallery" && albums.map(item => (
+              <div key={item.id} className="flex justify-between items-center p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                 <div>
+                   <p className="font-bold text-slate-800">{item.title}</p>
+                   <p className="text-sm text-slate-500">{new Date(item.date || item.created_at).toLocaleDateString()}</p>
+                 </div>
+                 <button onClick={() => handleDelete(item.id, "gallery")} className="text-red-500 hover:bg-red-50 p-2 rounded-lg font-bold">Delete Album</button>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -153,13 +197,47 @@ function NewsForm({ onSuccess }) {
     e.preventDefault();
     setLoading(true);
     const formData = new FormData(e.target);
+    const title = formData.get("title");
+    const content = formData.get("content");
+    const date = formData.get("date");
+    const isExternal = formData.get("isExternal") === "true";
+    const externalUrl = formData.get("externalUrl");
+    const coverImageFile = formData.get("coverImage");
+
     try {
-      await fetch(`${API_URL}/news`, { method: "POST", body: formData });
+      let coverImageUrl = null;
+
+      if (coverImageFile && coverImageFile.size > 0) {
+        const fileName = `${Date.now()}-${coverImageFile.name}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("news")
+          .upload(fileName, coverImageFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("news")
+          .getPublicUrl(fileName);
+        
+        coverImageUrl = publicUrl;
+      }
+
+      const { error: dbError } = await supabase.from("news").insert({
+        title,
+        content,
+        date,
+        is_external: isExternal,
+        external_url: externalUrl,
+        cover_image: coverImageUrl
+      });
+
+      if (dbError) throw dbError;
+
       e.target.reset();
       onSuccess();
     } catch (err) {
       console.error(err);
-      alert("Error adding news.");
+      alert("Error adding news: " + err.message);
     }
     setLoading(false);
   };
@@ -301,4 +379,94 @@ function PublicationsForm({ onSuccess }) {
       </button>
     </form>
   )
+}
+
+function GalleryManagement({ albums, onSuccess }) {
+  const [selectedAlbumId, setSelectedAlbumId] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleCreateAlbum = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const formData = new FormData(e.target);
+    const title = formData.get("title");
+    const date = formData.get("date");
+    const description = formData.get("description");
+    const coverFile = formData.get("cover");
+
+    try {
+      let coverUrl = "";
+      if (coverFile) {
+        const fileName = `${Date.now()}-${coverFile.name}`;
+        await supabase.storage.from("gallery").upload(fileName, coverFile);
+        coverUrl = supabase.storage.from("gallery").getPublicUrl(fileName).data.publicUrl;
+      }
+
+      await supabase.from("gallery_albums").insert({ title, date, description, cover_image_url: coverUrl });
+      e.target.reset();
+      onSuccess();
+    } catch (err) { alert(err.message); }
+    setLoading(false);
+  };
+
+  const handleUploadImages = async (e) => {
+    e.preventDefault();
+    if (!selectedAlbumId) return alert("Select an album first");
+    setLoading(true);
+    const files = e.target.images.files;
+    
+    try {
+      for (let file of files) {
+        const fileName = `${Date.now()}-${file.name}`;
+        await supabase.storage.from("gallery").upload(fileName, file);
+        const url = supabase.storage.from("gallery").getPublicUrl(fileName).data.publicUrl;
+        await supabase.from("gallery_images").insert({ album_id: selectedAlbumId, image_url: url });
+      }
+      e.target.reset();
+      alert("Images uploaded successfully!");
+    } catch (err) { alert(err.message); }
+    setLoading(false);
+  };
+
+  return (
+    <div className="space-y-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        {/* Create Album */}
+        <div>
+          <h3 className="text-lg font-bold mb-4 text-slate-700">Create New Event Album</h3>
+          <form onSubmit={handleCreateAlbum} className="space-y-4">
+            <input type="text" name="title" placeholder="Album Title (e.g. 21st AGM)" required className="w-full p-3 border border-slate-200 rounded-xl" />
+            <input type="date" name="date" required className="w-full p-3 border border-slate-200 rounded-xl" />
+            <textarea name="description" placeholder="Short description..." className="w-full p-3 border border-slate-200 rounded-xl" />
+            <div className="flex flex-col gap-2">
+               <label className="text-sm font-bold text-slate-500 uppercase">Cover Image</label>
+               <input type="file" name="cover" accept="image/*" required className="p-2 border border-slate-200 rounded-xl bg-slate-50" />
+            </div>
+            <button disabled={loading} className="w-full py-3 bg-sky-500 text-white font-bold rounded-xl hover:bg-sky-600 transition-all">Create Album</button>
+          </form>
+        </div>
+
+        {/* Upload Images */}
+        <div>
+          <h3 className="text-lg font-bold mb-4 text-slate-700">Add Images to Album</h3>
+          <form onSubmit={handleUploadImages} className="space-y-4">
+            <select 
+              value={selectedAlbumId} 
+              onChange={(e) => setSelectedAlbumId(e.target.value)}
+              className="w-full p-3 border border-slate-200 rounded-xl"
+              required
+            >
+              <option value="">Select Album...</option>
+              {albums.map(a => <option key={a.id} value={a.id}>{a.title}</option>)}
+            </select>
+            <div className="flex flex-col gap-2">
+               <label className="text-sm font-bold text-slate-500 uppercase">Select Multiple Images</label>
+               <input type="file" name="images" accept="image/*" multiple required className="p-2 border border-slate-200 rounded-xl bg-slate-50" />
+            </div>
+            <button disabled={loading} className="w-full py-3 bg-cyan-500 text-white font-bold rounded-xl hover:bg-cyan-600 transition-all">Upload Images</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 }

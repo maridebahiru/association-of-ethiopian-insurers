@@ -1,23 +1,39 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ChevronRight, Calendar, Video, Archive, ArrowRight } from "lucide-react";
+import { supabase } from "../lib/supabase";
 
 export default function NewsPage() {
-  const latestArticle = {
-    title: "21ST ANNUAL GENERAL MEETING HIGHLIGHTS & STRATEGIC DIRECTIONS",
+  const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      const { data, error } = await supabase
+        .from("news")
+        .select("*")
+        .order("date", { ascending: false });
+      
+      if (!error) setNews(data);
+      setLoading(false);
+    };
+    fetchNews();
+  }, []);
+
+  const latestArticle = news[0] || {
+    title: "No News Available",
     category: "Press Release",
-    date: "Nov 25, 2024",
-    image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80&w=1200",
-    excerpt: "The Association of Ethiopian Insurers successfully concluded its 21st Annual General Meeting, setting forth new strategic directions aimed at bolstering the resilience and reach of the insurance sector across the nation.",
-    link: "/news/1"
+    date: "",
+    cover_image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80&w=1200",
+    content: "Stay tuned for updates.",
+    link: "#"
   };
 
-  const featured = [
-    { title: "National Bank of Ethiopia Issues Third Financial Stability Report", link: "/news/2" },
-    { title: "Notice on Illegal Birr-Paired Peer-to-Peer Transactions", link: "/news/3" },
-    { title: "Appointment of Two External Members to the Policy Committee", link: "/news/4" },
-    { title: "Request For Expression of Interest (REOI) for System Audit", link: "/news/5" }
-  ];
+  const featured = news.slice(1, 5).map(item => ({
+    title: item.title,
+    link: item.is_external ? item.external_url : `/news/${item.id}`
+  }));
 
   const events = [
     { title: "Ethiopia Finance Forum 2025", date: "May 17, 2025", link: "/events/1" },
@@ -29,11 +45,10 @@ export default function NewsPage() {
     { title: "Highlights from the Insurance Week Exhibition", date: "Sep 22, 2024", link: "/videos/2", thumb: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=600" }
   ];
 
-  const archives = [
-    { title: "Review of the 2023 Insurance Directives", link: "/archive/1" },
-    { title: "AEI and Regulatory Bodies Sign Agreement to Promote Microinsurance", link: "/archive/2" },
-    { title: "The Association supports the Green Legacy initiative", link: "/archive/3" }
-  ];
+  const archives = news.slice(5).map(item => ({
+    title: item.title,
+    link: item.is_external ? item.external_url : `/news/${item.id}`
+  }));
 
   return (
     <div className="min-h-screen bg-slate-50 relative z-10 flex flex-col pt-24 font-sans">
@@ -73,9 +88,9 @@ export default function NewsPage() {
                 <h2 className="text-2xl font-bold uppercase text-[#0b1d30]">Latest Article</h2>
               </div>
               
-              <Link to={latestArticle.link} className="group block bg-white border border-slate-200 hover:shadow-xl transition-all rounded-sm overflow-hidden">
+              <Link to={latestArticle.is_external ? latestArticle.external_url : `/news/${latestArticle.id}`} className="group block bg-white border border-slate-200 hover:shadow-xl transition-all rounded-sm overflow-hidden">
                 <div className="relative h-64 md:h-80 w-full overflow-hidden">
-                  <img src={latestArticle.image} alt="Latest Article" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <img src={latestArticle.cover_image || "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80&w=1200"} alt="Latest Article" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute top-4 left-4 bg-[#c0944f] text-white text-xs font-bold uppercase px-3 py-1 shadow-md">
                     {latestArticle.category}
                   </div>
@@ -85,8 +100,8 @@ export default function NewsPage() {
                   <h3 className="text-2xl md:text-3xl font-black uppercase text-[#0b1d30] leading-tight mb-4 group-hover:text-[#c0944f] transition-colors">
                     {latestArticle.title}
                   </h3>
-                  <p className="text-slate-600 leading-relaxed font-light text-lg">
-                    {latestArticle.excerpt}
+                  <p className="text-slate-600 leading-relaxed font-light text-lg line-clamp-3">
+                    {latestArticle.content}
                   </p>
                   <div className="mt-6 flex items-center gap-2 text-[#0b1d30] font-bold text-sm uppercase tracking-wider group-hover:text-[#c0944f] transition-colors">
                     Read Full Story <ArrowRight className="w-4 h-4" />

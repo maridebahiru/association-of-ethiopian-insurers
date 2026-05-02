@@ -1,28 +1,31 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ChevronRight, ArrowRight, Twitter, Facebook, Linkedin, Youtube } from "lucide-react";
+import { supabase } from "../lib/supabase";
 
 export default function NewsAndEvents() {
-  const latestNews = [
-    {
-      date: "Jun 25, 2025",
-      title: "51st AIO Conference Addis Ababa 2025.Highlight of a colourful opening ceremony chaired by the Vice Prime Minister of the Federal Democratic Republic of Ethiopia",
-      link: "https://associationofethiopianinsurers.com/2025/06/25/51st-aio-conference-addis-ababa-2025-highlight-of-a-colourful-opening-ceremony-chaired-by-the-vice-prime-minister-of-the-federal-democratic-republic-of-ethiopia/",
-      isExternal: true
-    },
-    {
-      date: "Jun 25, 2025",
-      title: "✨ A Historic and Proud Moment! ✨",
-      link: "https://associationofethiopianinsurers.com/2025/06/25/1894/",
-      isExternal: true
-    },
-    {
-      date: "Apr 03, 2025",
-      title: "51ST AIO CONFERENCE, ADDIS ABABA 2025.",
-      link: "https://associationofethiopianinsurers.com/2025/04/03/51st-aio-conference-addis-ababa-2025/",
-      isExternal: true
-    }
-  ];
+  const [latestNews, setLatestNews] = useState([]);
+
+  useEffect(() => {
+    const fetchLatestNews = async () => {
+      const { data, error } = await supabase
+        .from("news")
+        .select("*")
+        .order("date", { ascending: false })
+        .limit(3);
+      
+      if (!error) {
+        setLatestNews(data.map(item => ({
+          date: new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' }),
+          title: item.title,
+          link: item.is_external ? item.external_url : `/news/${item.id}`,
+          isExternal: item.is_external
+        })));
+      }
+    };
+    fetchLatestNews();
+  }, []);
 
   const featuredContents = [
     {

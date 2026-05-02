@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { X, Phone, Mail, Printer, Calendar } from "lucide-react";
+import LogoLoop from './LogoLoop';
 import eicLogo from "../assets/Ethiopian_Insurance_Corporation.png";
 
 export const COMPANIES = [
@@ -109,6 +110,13 @@ export const COMPANIES = [
 export default function InfiniteLogoScroll() {
   const [selectedCompany, setSelectedCompany] = useState(null);
 
+  const logoItems = COMPANIES.map((company) => ({
+    src: company.image || "/insurers-logos.jpg", // Default to sprite if no specific image
+    alt: company.name,
+    title: company.name,
+    company: company // Keep reference for the click handler
+  }));
+
   return (
     <>
       <section className="py-16 bg-white border-t border-b border-slate-200 overflow-hidden flex flex-col items-center">
@@ -116,18 +124,22 @@ export default function InfiniteLogoScroll() {
           <h2 className="text-sm font-bold tracking-widest text-sky-500 uppercase">Trusted by Ethiopia's Leading Insurers</h2>
         </div>
         
-        <div className="relative w-full max-w-[100vw] overflow-hidden flex [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-          <motion.div
-            className="flex flex-nowrap gap-8 sm:gap-12 py-6 items-center pr-8 sm:pr-12"
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{ ease: "linear", duration: 60, repeat: Infinity }}
-            style={{ width: "max-content" }}
-          >
-            {[...COMPANIES, ...COMPANIES].map((company, i) => (
-               <div 
-                  key={i} 
+        <div className="w-full">
+          <LogoLoop
+            logos={logoItems}
+            speed={80}
+            direction="left"
+            logoHeight={80}
+            gap={60}
+            pauseOnHover={true}
+            fadeOut={true}
+            fadeOutColor="#ffffff"
+            renderItem={(item) => {
+              const company = item.company;
+              return (
+                <div 
                   onClick={() => setSelectedCompany(company)}
-                  className="flex-shrink-0 flex items-center justify-center opacity-75 hover:opacity-100 transition-all duration-300 w-56 sm:w-64"
+                  className="flex-shrink-0 flex items-center justify-center opacity-75 hover:opacity-100 transition-all duration-300 w-64"
                 >
                  <div className="w-full py-6 px-4 bg-slate-50 rounded-2xl flex flex-col items-center justify-center border border-slate-200 hover:border-sky-300 hover:bg-white transition-colors cursor-pointer hover:shadow-xl group">
                    
@@ -161,9 +173,10 @@ export default function InfiniteLogoScroll() {
                      {company.name}
                    </span>
                  </div>
-               </div>
-            ))}
-          </motion.div>
+                </div>
+              );
+            }}
+          />
         </div>
 
         <Link to="/members" className="mt-12 group flex items-center gap-2 text-slate-500 hover:text-sky-600 transition-colors text-sm font-medium">

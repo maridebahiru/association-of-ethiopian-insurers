@@ -100,25 +100,6 @@ const PAGE_DATA = {
 
 export default function GenericPage() {
   const location = useLocation();
-  const [fetchedData, setFetchedData] = useState([]);
-
-  useEffect(() => {
-    const fetchDynamicData = async () => {
-      if (location.pathname === "/proclamations" || location.pathname === "/publications") {
-        try {
-          const endpoint = location.pathname.substring(1);
-          const res = await fetch(`http://localhost:5000/api/${endpoint}`);
-          const data = await res.json();
-          setFetchedData(data);
-        } catch (error) {
-          console.error(`Failed to fetch ${location.pathname} data`, error);
-        }
-      } else {
-        setFetchedData([]);
-      }
-    };
-    fetchDynamicData();
-  }, [location.pathname]);
   const data = PAGE_DATA[location.pathname] || {
     title: "Welcome",
     subtitle: "Explore the Association of Ethiopian Insurers.",
@@ -186,21 +167,6 @@ export default function GenericPage() {
             </div>
           )}
 
-          {(location.pathname === "/proclamations" || location.pathname === "/publications") && fetchedData.length > 0 && (
-            <div className="w-full pb-10 max-w-4xl mx-auto">
-              <AnimatedList
-                items={fetchedData}
-                onItemSelect={(item) => {
-                  if (item && item.fileUrl) {
-                    window.open(`http://localhost:5000${item.fileUrl}`, '_blank');
-                  }
-                }}
-                showGradients
-                enableArrowNavigation
-                displayScrollbar
-              />
-            </div>
-          )}
 
           {data.galleryImages && (
             <div className="pb-10 min-h-[500px]">

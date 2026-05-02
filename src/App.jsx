@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import InfiniteLogoScroll from './components/InfiniteLogoScroll';
@@ -13,10 +14,22 @@ import MembersPage from './pages/MembersPage';
 import AdminPage from './pages/AdminPage';
 import PublicationsPage from './pages/PublicationsPage';
 import ProclamationsPage from './pages/ProclamationsPage';
+import GalleryPage from './pages/GalleryPage';
 import Chatbot from './components/Chatbot';
+import Loader from './components/Loader';
 
 function AnimatedRoutes() {
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) return <Loader />;
 
   return (
     <AnimatePresence mode="wait">
@@ -35,6 +48,7 @@ function AnimatedRoutes() {
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/publications" element={<PublicationsPage />} />
         <Route path="/proclamations" element={<ProclamationsPage />} />
+        <Route path="/gallery" element={<GalleryPage />} />
         <Route path="*" element={<GenericPage />} />
       </Routes>
     </AnimatePresence>
